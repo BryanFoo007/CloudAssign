@@ -10,6 +10,7 @@ resource "terraform_data" "uploads" {
       aws s3api put-bucket-tagging --bucket "${var.bucket_name}" --tagging "TagSet=[{Key=Name,Value=${var.name_prefix}-s3-uploads}]"
     EOT
   }
+
   provisioner "local-exec" {
     when    = destroy
     command = <<-EOT
@@ -52,6 +53,7 @@ resource "aws_s3_bucket_cors_configuration" "uploads" {
   bucket = var.bucket_name
 
   depends_on = [terraform_data.uploads]
+
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["GET"]
