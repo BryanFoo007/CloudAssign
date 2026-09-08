@@ -10,10 +10,10 @@
 # name is only account-scoped, so "assignment-tf-lock" is fine as-is.
 terraform {
   backend "s3" {
-    bucket         = "assignment-tfstate-869515049249"
-    key            = "sandbox/terraform.tfstate"
-    region         = "us-east-1"
-    use_lockfile   = true
-    encrypt        = true
+    bucket       = "assignment-tfstate-869515049249"
+    key          = "sandbox/terraform.tfstate"
+    region       = "us-east-1"
+    use_lockfile = true
+    encrypt      = true
   }
 }
