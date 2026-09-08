@@ -16,7 +16,6 @@ All AWS resource names use the prefix convention `assignment-{resource}` (e.g. `
 | Temporary credentials (`AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` + `AWS_SESSION_TOKEN`) expiring every ~3-4 hrs, rotating each lab session | All 3 must be stored as GitHub Actions repo secrets, and **re-pasted before each session** you want CI/CD to run. There is no way around this with an Academy account. |
 | $50 hard budget cap | Smallest sensible sizing, single NAT Gateway, `terraform destroy` between work sessions to stop hourly billing. |
 | Assignment brief: RDS assumed single-AZ, HTTP-only (no TLS/custom domain required) | ALB listens on port 80 only; RDS `multi_az = false` (but the DB subnet group still needs 2 subnets in 2 AZs — that's an AWS hard requirement regardless). |
-| S3 Object Lock blocked by Learner Lab SCP | Learner Lab's Service Control Policy explicitly denies `s3:GetBucketObjectLockConfiguration`. Because the Terraform `aws_s3_bucket` resource always checks Object Lock on refresh and halts on 403, the uploads bucket is bootstrapped via AWS CLI and referenced via `data "aws_s3_bucket"`. |
 
 ## 2. Architecture
 
@@ -169,7 +168,6 @@ This has already been scaffolded in this repo — see the actual files under [`i
 ```
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 STATE_BUCKET="assignment-tfstate-${ACCOUNT_ID}"
-UPLOADS_BUCKET="assignment-s3-uploads-${ACCOUNT_ID}"
 
 aws s3api create-bucket --bucket "$STATE_BUCKET" --region us-east-1
 aws s3api put-bucket-versioning --bucket "$STATE_BUCKET" --versioning-configuration Status=Enabled
@@ -177,7 +175,6 @@ aws dynamodb create-table --table-name assignment-tf-lock \
   --attribute-definitions AttributeName=LockID,AttributeType=S \
   --key-schema AttributeName=LockID,KeyType=HASH \
   --billing-mode PAY_PER_REQUEST
-aws s3api create-bucket --bucket "$UPLOADS_BUCKET" --region us-east-1
 ```
 
 Then set `bucket = "assignment-tfstate-<your-account-id>"` in [`backend.tf`](envs/sandbox/backend.tf) to match.
