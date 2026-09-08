@@ -27,7 +27,7 @@ variable "target_group_arn" {
 variable "instance_type" {
   description = "EC2 instance type. Bump this (e.g. to t3.small) if t3.micro is insufficient under load - no other changes needed."
   type        = string
-  default     = "t3.micro"
+  default     = "t3.medium"
 }
 
 variable "instance_profile_name" {
@@ -76,5 +76,5 @@ variable "desired_capacity" {
 variable "cpu_target_value" {
   description = "Target average CPU utilization (%) for the scaling policy."
   type        = number
-  default     = 60
+  default     = 80
 }
